@@ -5,7 +5,7 @@ import { Height, ToasterProps, ToastToDismiss, ToastType } from "../types"
 import { Toast } from "./toast"
 import React from "react"
 
-function _cn(...classes: (string | undefined)[]) {
+function classic(...classes: (string | undefined | null)[]) {
   return classes.filter(Boolean).join(" ")
 }
 
@@ -28,7 +28,7 @@ export const Toaster = (props: ToasterProps) => {
     icons,
     containerAriaLabel = "Notifications",
     pauseWhenPageIsHidden,
-    cx = _cn,
+    cx = classic,
   } = props
   const [toasts, setToasts] = React.useState<ToastType[]>([])
   const possiblePositions = React.useMemo(() => {
@@ -96,30 +96,22 @@ export const Toaster = (props: ToasterProps) => {
   React.useEffect(() => {
     if (theme !== "system") {
       setActualTheme(theme)
+
       return
     }
 
     if (theme === "system") {
-      // check if current preference is dark
-      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-        // it's currently dark
-        setActualTheme("dark")
-      } else {
-        // it's not dark
-        setActualTheme("light")
-      }
+      const isDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches
+
+      setActualTheme(isDark ? "dark" : "light")
     }
 
     if (typeof window === "undefined") {
       return
     }
 
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
-      if (matches) {
-        setActualTheme("dark")
-      } else {
-        setActualTheme("light")
-      }
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches: isDark }) => {
+      setActualTheme(isDark ? "dark" : "light")
     })
   }, [theme])
 
@@ -132,7 +124,7 @@ export const Toaster = (props: ToasterProps) => {
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      const isHotkeyPressed = hotkey.every((key) => (event as any)[key] || event.code === key)
+      const isHotkeyPressed = hotkey.every((key) => event[key] || event.code === key)
 
       if (isHotkeyPressed) {
         setExpanded(true)
@@ -146,6 +138,7 @@ export const Toaster = (props: ToasterProps) => {
         setExpanded(false)
       }
     }
+
     document.addEventListener("keydown", handleKeyDown)
 
     return () => document.removeEventListener("keydown", handleKeyDown)
@@ -154,11 +147,13 @@ export const Toaster = (props: ToasterProps) => {
   React.useEffect(() => {
     if (listRef.current) {
       return () => {
-        if (lastFocusedElementRef.current) {
-          lastFocusedElementRef.current.focus({ preventScroll: true })
-          lastFocusedElementRef.current = null
-          isFocusWithinRef.current = false
+        if (!lastFocusedElementRef.current) {
+          return
         }
+
+        lastFocusedElementRef.current.focus({ preventScroll: true })
+        lastFocusedElementRef.current = null
+        isFocusWithinRef.current = false
       }
     }
   }, [listRef.current])

@@ -306,6 +306,8 @@ export const Toast = (props: ToastProps) => {
     }
   }
 
+  const isJsxOrTitle = toast.jsx || React.isValidElement(toast.title)
+
   return (
     <li
       aria-live={toast.important ? "assertive" : "polite"}
@@ -353,7 +355,7 @@ export const Toast = (props: ToastProps) => {
       onPointerUp={onPointerUp}
       onPointerMove={onPointerMove}
     >
-      {closeButton && !toast.jsx && (
+      {closeButton && !toast.jsx ? (
         <button
           aria-label={closeButtonAriaLabel}
           data-disabled={disabled}
@@ -393,11 +395,11 @@ export const Toast = (props: ToastProps) => {
             />
           </svg>
         </button>
-      )}
+      ) : null}
 
-      {toast.jsx || React.isValidElement(toast.title) ? (
-        toast.jsx || toast.title
-      ) : (
+      {isJsxOrTitle && (toast.jsx || toast.title)}
+
+      {isJsxOrTitle ? null : (
         <>
           {toastType ||
             toast.icon ||
@@ -435,6 +437,7 @@ export const Toast = (props: ToastProps) => {
               </div>
             ) : null}
           </div>
+
           {React.isValidElement(toast.cancel) ? (
             toast.cancel
           ) : toast.cancel && isAction(toast.cancel) ? (
@@ -447,9 +450,11 @@ export const Toast = (props: ToastProps) => {
                 if (!isAction(toast.cancel)) {
                   return
                 }
+
                 if (!dismissible) {
                   return
                 }
+
                 toast.cancel.onClick?.(event)
                 deleteToast()
               }}
@@ -458,6 +463,7 @@ export const Toast = (props: ToastProps) => {
               {toast.cancel.label}
             </button>
           ) : null}
+
           {React.isValidElement(toast.action) ? (
             toast.action
           ) : toast.action && isAction(toast.action) ? (
@@ -470,9 +476,11 @@ export const Toast = (props: ToastProps) => {
                 if (!isAction(toast.action)) {
                   return
                 }
+
                 if (event.defaultPrevented) {
                   return
                 }
+
                 toast.action.onClick?.(event)
                 deleteToast()
               }}
