@@ -9,6 +9,7 @@
     "lint:unsafe": "biome lint --write --unsafe ."
   },
   "dependencies": {
+    "@radix-ui/react-slot": "^1.1.0",
     "@supabase/ssr": "latest",
     "@supabase/supabase-js": "latest",
     "autoprefixer": "10.4.17",
