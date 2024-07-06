@@ -43,7 +43,7 @@ export const Toaster = (props: ToasterProps) => {
     theme !== "system"
       ? theme
       : typeof window !== "undefined"
-        ? window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? window.matchMedia?.("(prefers-color-scheme: dark)").matches
           ? "dark"
           : "light"
         : "light"
@@ -101,7 +101,7 @@ export const Toaster = (props: ToasterProps) => {
 
     if (theme === "system") {
       // check if current preference is dark
-      if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
         // it's currently dark
         setActualTheme("dark")
       } else {
@@ -110,7 +110,9 @@ export const Toaster = (props: ToasterProps) => {
       }
     }
 
-    if (typeof window === "undefined") return
+    if (typeof window === "undefined") {
+      return
+    }
 
     window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
       if (matches) {
@@ -161,7 +163,9 @@ export const Toaster = (props: ToasterProps) => {
     }
   }, [listRef.current])
 
-  if (!toasts.length) return null
+  if (!toasts.length) {
+    return null
+  }
 
   return (
     // Remove item from normal navigation flow, only available via hotkey
@@ -203,7 +207,9 @@ export const Toaster = (props: ToasterProps) => {
               const isNotDismissible =
                 event.target instanceof HTMLElement && event.target.dataset.dismissible === "false"
 
-              if (isNotDismissible) return
+              if (isNotDismissible) {
+                return
+              }
 
               if (!isFocusWithinRef.current) {
                 isFocusWithinRef.current = true
@@ -222,7 +228,9 @@ export const Toaster = (props: ToasterProps) => {
               const isNotDismissible =
                 event.target instanceof HTMLElement && event.target.dataset.dismissible === "false"
 
-              if (isNotDismissible) return
+              if (isNotDismissible) {
+                return
+              }
               setInteracting(true)
             }}
             onPointerUp={() => setInteracting(false)}
@@ -250,8 +258,8 @@ export const Toaster = (props: ToasterProps) => {
                   cancelButtonStyle={toastOptions?.cancelButtonStyle}
                   actionButtonStyle={toastOptions?.actionButtonStyle}
                   removeToast={removeToast}
-                  toasts={toasts.filter((t) => t.position == toast.position)}
-                  heights={heights.filter((h) => h.position == toast.position)}
+                  toasts={toasts.filter((t) => t.position === toast.position)}
+                  heights={heights.filter((h) => h.position === toast.position)}
                   setHeights={setHeights}
                   expandByDefault={expand}
                   gap={gap}

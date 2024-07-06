@@ -90,7 +90,9 @@ export const Toast = (props: ToastProps) => {
   }, [])
 
   React.useLayoutEffect(() => {
-    if (!mounted) return
+    if (!mounted) {
+      return
+    }
     const toastNode = toastRef.current
     const originalHeight = toastNode.style.height
     toastNode.style.height = "auto"
@@ -103,9 +105,9 @@ export const Toast = (props: ToastProps) => {
       const alreadyExists = heights.find((height) => height.toastId === toast.id)
       if (alreadyExists) {
         return heights.map((height) => (height.toastId === toast.id ? { ...height, height: newHeight } : height))
-      } else {
-        return [{ toastId: toast.id, height: newHeight, position: toast.position }, ...heights]
       }
+
+      return [{ toastId: toast.id, height: newHeight, position: toast.position }, ...heights]
     })
   }, [mounted, toast.title, toast.description, setHeights, toast.id])
 
@@ -125,8 +127,9 @@ export const Toast = (props: ToastProps) => {
       (toast.promise && toastType === "loading") ||
       toast.duration === Number.POSITIVE_INFINITY ||
       toast.type === "loading"
-    )
+    ) {
       return
+    }
     let timeoutId: NodeJS.Timeout
     let remainingTime = duration
 
@@ -136,7 +139,7 @@ export const Toast = (props: ToastProps) => {
         // Get the elapsed time since the timer started
         const elapsedTime = new Date().getTime() - closeTimerStartTimeRef.current
 
-        remainingTime = remainingTime - elapsedTime
+        remainingTime -= elapsedTime
       }
 
       lastCloseTimerStartTimeRef.current = new Date().getTime()
@@ -146,7 +149,9 @@ export const Toast = (props: ToastProps) => {
       // setTimeout(, Infinity) behaves as if the delay is 0.
       // As a result, the toast would be closed immediately, giving the appearance that it was never rendered.
       // See: https://github.com/denysdovhan/wtfjs?tab=readme-ov-file#an-infinite-timeout
-      if (remainingTime === Number.POSITIVE_INFINITY) return
+      if (remainingTime === Number.POSITIVE_INFINITY) {
+        return
+      }
 
       closeTimerStartTimeRef.current = new Date().getTime()
 
@@ -223,9 +228,13 @@ export const Toast = (props: ToastProps) => {
   }
 
   const onPointerDown: React.PointerEventHandler<HTMLElement> = (event) => {
-    if (disabled || !dismissible) return
+    if (disabled || !dismissible) {
+      return
+    }
 
-    if (!(event.target instanceof HTMLElement)) return
+    if (!(event.target instanceof HTMLElement)) {
+      return
+    }
 
     dragStartTime.current = new Date()
 
@@ -234,7 +243,9 @@ export const Toast = (props: ToastProps) => {
     // Ensure we maintain correct pointer capture even when going outside of the toast (e.g. when swiping)
     event.target.setPointerCapture(event.pointerId)
 
-    if (event.target.tagName === "BUTTON") return
+    if (event.target.tagName === "BUTTON") {
+      return
+    }
 
     setSwiping(true)
 
@@ -242,7 +253,9 @@ export const Toast = (props: ToastProps) => {
   }
 
   const onPointerUp: React.PointerEventHandler<HTMLElement> = () => {
-    if (swipeOut || !dismissible) return
+    if (swipeOut || !dismissible) {
+      return
+    }
 
     pointerStartRef.current = null
 
@@ -271,7 +284,9 @@ export const Toast = (props: ToastProps) => {
   }
 
   const onPointerMove: React.PointerEventHandler<HTMLElement> = (event) => {
-    if (!pointerStartRef.current || !dismissible) return
+    if (!(pointerStartRef.current && dismissible)) {
+      return
+    }
 
     const yPosition = event.clientY - pointerStartRef.current.y
     const xPosition = event.clientX - pointerStartRef.current.x
@@ -296,7 +311,6 @@ export const Toast = (props: ToastProps) => {
       aria-live={toast.important ? "assertive" : "polite"}
       aria-atomic="true"
       role="status"
-      tabIndex={0}
       ref={toastRef}
       className={cx(
         className,
@@ -309,7 +323,7 @@ export const Toast = (props: ToastProps) => {
       )}
       data-sonner-toast=""
       data-rich-colors={toast.richColors ?? defaultRichColors}
-      data-styled={!Boolean(toast.jsx || toast.unstyled || unstyled)}
+      data-styled={!toast.jsx || toast.unstyled || unstyled}
       data-mounted={mounted}
       data-promise={Boolean(toast.promise)}
       data-removed={removed}
@@ -370,13 +384,13 @@ export const Toast = (props: ToastProps) => {
               y1="6"
               x2="6"
               y2="18"
-            ></line>
+            />
             <line
               x1="6"
               y1="6"
               x2="18"
               y2="18"
-            ></line>
+            />
           </svg>
         </button>
       )}
@@ -430,8 +444,12 @@ export const Toast = (props: ToastProps) => {
               style={toast.cancelButtonStyle || cancelButtonStyle}
               onClick={(event) => {
                 // We need to check twice because typescript
-                if (!isAction(toast.cancel)) return
-                if (!dismissible) return
+                if (!isAction(toast.cancel)) {
+                  return
+                }
+                if (!dismissible) {
+                  return
+                }
                 toast.cancel.onClick?.(event)
                 deleteToast()
               }}
@@ -449,8 +467,12 @@ export const Toast = (props: ToastProps) => {
               style={toast.actionButtonStyle || actionButtonStyle}
               onClick={(event) => {
                 // We need to check twice because typescript
-                if (!isAction(toast.action)) return
-                if (event.defaultPrevented) return
+                if (!isAction(toast.action)) {
+                  return
+                }
+                if (event.defaultPrevented) {
+                  return
+                }
                 toast.action.onClick?.(event)
                 deleteToast()
               }}

@@ -22,9 +22,9 @@ function useSonner() {
           const updatedToasts = [...currentToasts]
           updatedToasts[existingToastIndex] = { ...updatedToasts[existingToastIndex], ...toast }
           return updatedToasts
-        } else {
-          return [toast, ...currentToasts]
         }
+
+        return [toast, ...currentToasts]
       })
     })
   }, [])
