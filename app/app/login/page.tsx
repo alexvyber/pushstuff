@@ -66,7 +66,7 @@ export default function Login() {
                 type="email"
                 name="email"
                 placeholder="m@example.com"
-                required
+                required={true}
               />
             </div>
             <div className="grid gap-2">
@@ -83,7 +83,7 @@ export default function Login() {
                 id="password"
                 type="password"
                 name="password"
-                required
+                required={true}
               />
             </div>
             <SubmitButton
